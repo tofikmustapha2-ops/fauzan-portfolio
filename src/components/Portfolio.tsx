@@ -1,27 +1,72 @@
 import React, { useState } from 'react';
-import { Sparkles, Filter, Eye, Play, ArrowUpRight, Info, CheckCircle2 } from 'lucide-react';
-import { PORTFOLIO_ITEMS } from '../data/portfolioData';
+import { Sparkles, Filter, Eye, Play, ArrowUpRight, Info, Plus, Edit3, Trash2, ShieldCheck, Image as ImageIcon } from 'lucide-react';
 import { PortfolioCategory, PortfolioItem, ServiceType } from '../types';
 import { ProjectModal } from './ProjectModal';
 
 interface PortfolioProps {
+  items: PortfolioItem[];
+  isOwnerMode?: boolean;
   onRequestService: (service: ServiceType) => void;
+  onEditItem?: (item: PortfolioItem) => void;
+  onDeleteItem?: (id: string) => void;
+  onAddNewItem?: () => void;
 }
 
-export const Portfolio: React.FC<PortfolioProps> = ({ onRequestService }) => {
+export const Portfolio: React.FC<PortfolioProps> = ({
+  items,
+  isOwnerMode = false,
+  onRequestService,
+  onEditItem,
+  onDeleteItem,
+  onAddNewItem,
+}) => {
   const [activeCategory, setActiveCategory] = useState<PortfolioCategory>('All');
   const [selectedItem, setSelectedItem] = useState<PortfolioItem | null>(null);
 
   const categories: PortfolioCategory[] = ['All', 'Flyers', 'Social Media', 'Websites', 'Videos'];
 
   const filteredItems = activeCategory === 'All'
-    ? PORTFOLIO_ITEMS
-    : PORTFOLIO_ITEMS.filter((item) => item.category === activeCategory);
+    ? items
+    : items.filter((item) => item.category === activeCategory);
 
   return (
     <section id="portfolio" className="py-20 bg-slate-900 text-white relative border-t border-slate-800">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
+        {/* Owner Edit Mode Top Banner (Only visible when unlocked) */}
+        {isOwnerMode && (
+          <div className="mb-8 p-4 sm:p-5 rounded-2xl bg-emerald-500/10 border-2 border-emerald-500/40 flex flex-col sm:flex-row items-center justify-between gap-4 shadow-lg shadow-emerald-500/5">
+            <div className="flex items-center gap-3 text-center sm:text-left">
+              <div className="p-2.5 rounded-xl bg-emerald-500 text-slate-950">
+                <ShieldCheck className="w-5 h-5" />
+              </div>
+              <div>
+                <h3 className="text-sm sm:text-base font-bold text-white flex items-center gap-2">
+                  <span>Owner Edit Mode Active</span>
+                  <span className="text-[10px] px-2 py-0.5 rounded-full bg-emerald-500 text-slate-950 font-extrabold uppercase">
+                    Admin
+                  </span>
+                </h3>
+                <p className="text-xs text-emerald-300/90">
+                  You can now replace pictures, edit text, or add new design projects to your portfolio.
+                </p>
+              </div>
+            </div>
+
+            {onAddNewItem && (
+              <button
+                type="button"
+                id="owner-add-project-btn"
+                onClick={onAddNewItem}
+                className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold bg-emerald-500 text-slate-950 hover:bg-emerald-400 shadow-md shadow-emerald-500/20 transition-all duration-200 cursor-pointer shrink-0"
+              >
+                <Plus className="w-4 h-4" />
+                <span>Add New Project Design</span>
+              </button>
+            )}
+          </div>
+        )}
+
         {/* Section Header */}
         <div className="text-center max-w-3xl mx-auto mb-10">
           <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-xs font-semibold uppercase tracking-wider mb-3">
@@ -35,7 +80,7 @@ export const Portfolio: React.FC<PortfolioProps> = ({ onRequestService }) => {
             Explore sample designs, marketing flyers, social media cards, and website layouts crafted to demonstrate how I can help local businesses stand out.
           </p>
 
-          {/* Explicit Notice Badge as requested */}
+          {/* Transparency Notice Badge */}
           <div className="mt-4 inline-flex items-center gap-2 px-4 py-1.5 rounded-lg bg-slate-950/80 border border-slate-800 text-xs text-amber-300">
             <Info className="w-4 h-4 text-amber-400 shrink-0" />
             <span>
@@ -48,8 +93,8 @@ export const Portfolio: React.FC<PortfolioProps> = ({ onRequestService }) => {
         <div className="flex flex-wrap items-center justify-center gap-2 mb-12" id="portfolio-filters">
           {categories.map((category) => {
             const count = category === 'All' 
-              ? PORTFOLIO_ITEMS.length 
-              : PORTFOLIO_ITEMS.filter(i => i.category === category).length;
+              ? items.length 
+              : items.filter(i => i.category === category).length;
 
             const isActive = activeCategory === category;
 
@@ -81,11 +126,13 @@ export const Portfolio: React.FC<PortfolioProps> = ({ onRequestService }) => {
             <div
               key={item.id}
               id={`portfolio-item-${item.id}`}
-              onClick={() => setSelectedItem(item)}
-              className="bg-slate-950 rounded-2xl border border-slate-800 hover:border-emerald-500/50 transition-all duration-300 overflow-hidden group flex flex-col justify-between hover:shadow-xl hover:-translate-y-1 cursor-pointer"
+              className="bg-slate-950 rounded-2xl border border-slate-800 hover:border-emerald-500/50 transition-all duration-300 overflow-hidden group flex flex-col justify-between hover:shadow-xl hover:-translate-y-1 relative"
             >
               {/* Media Preview Box */}
-              <div className="relative aspect-[4/3] w-full bg-slate-900 overflow-hidden">
+              <div 
+                className="relative aspect-[4/3] w-full bg-slate-900 overflow-hidden cursor-pointer"
+                onClick={() => setSelectedItem(item)}
+              >
                 <img
                   src={item.image}
                   alt={item.title}
@@ -115,12 +162,14 @@ export const Portfolio: React.FC<PortfolioProps> = ({ onRequestService }) => {
                   </span>
                 </div>
 
-                {/* Hover Quick View Trigger */}
-                <div className="absolute top-3 right-3 z-10 opacity-0 group-hover:opacity-100 transition-opacity">
-                  <span className="p-2 rounded-lg bg-emerald-500 text-slate-950 flex items-center justify-center shadow-md">
-                    <Eye className="w-4 h-4" />
-                  </span>
-                </div>
+                {/* Hover Quick View Trigger (For non-edit mode) */}
+                {!isOwnerMode && (
+                  <div className="absolute top-3 right-3 z-10 opacity-0 group-hover:opacity-100 transition-opacity">
+                    <span className="p-2 rounded-lg bg-emerald-500 text-slate-950 flex items-center justify-center shadow-md">
+                      <Eye className="w-4 h-4" />
+                    </span>
+                  </div>
+                )}
 
                 {/* Bottom Bar inside image */}
                 <div className="absolute bottom-3 left-3 right-3 z-10 flex items-center justify-between text-[11px] text-slate-300">
@@ -135,8 +184,44 @@ export const Portfolio: React.FC<PortfolioProps> = ({ onRequestService }) => {
                 </div>
               </div>
 
+              {/* OWNER ACTION BUTTONS OVERLAY (Visible only in Owner Mode) */}
+              {isOwnerMode && (
+                <div className="bg-slate-900/95 border-b border-slate-800 px-4 py-2 flex items-center justify-between gap-2">
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      onEditItem?.(item);
+                    }}
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold bg-emerald-500/20 hover:bg-emerald-500 text-emerald-300 hover:text-slate-950 border border-emerald-500/40 transition-colors"
+                  >
+                    <Edit3 className="w-3.5 h-3.5" />
+                    <span>Edit Picture & Details</span>
+                  </button>
+
+                  {onDeleteItem && (
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        if (confirm(`Delete "${item.title}" from portfolio?`)) {
+                          onDeleteItem(item.id);
+                        }
+                      }}
+                      title="Delete Project"
+                      className="p-1.5 rounded-lg text-rose-400 hover:bg-rose-500/20 hover:text-rose-300 transition-colors"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </button>
+                  )}
+                </div>
+              )}
+
               {/* Text Card Content */}
-              <div className="p-5 flex-1 flex flex-col justify-between">
+              <div 
+                className="p-5 flex-1 flex flex-col justify-between cursor-pointer"
+                onClick={() => setSelectedItem(item)}
+              >
                 <div>
                   <h3 className="text-base font-bold text-white mb-2 group-hover:text-emerald-400 transition-colors line-clamp-1">
                     {item.title}

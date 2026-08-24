@@ -16,7 +16,7 @@ app.get('/api/health', (req, res) => {
   res.json({
     status: 'ok',
     timestamp: new Date().toISOString(),
-    configuredEmail: process.env.CONTACT_RECEIVER_EMAIL || 'YOUR_EMAIL@example.com',
+    configuredEmail: process.env.CONTACT_RECEIVER_EMAIL || 'suhuyinifauzanadam@gmail.com',
     smtpConfigured: Boolean(process.env.SMTP_HOST && process.env.SMTP_USER && process.env.SMTP_PASS),
   });
 });
@@ -33,7 +33,7 @@ app.post('/api/contact', async (req, res) => {
       });
     }
 
-    const recipientEmail = process.env.CONTACT_RECEIVER_EMAIL || 'YOUR_EMAIL@example.com';
+    const recipientEmail = process.env.CONTACT_RECEIVER_EMAIL || 'suhuyinifauzanadam@gmail.com';
     const smtpHost = process.env.SMTP_HOST;
     const smtpPort = parseInt(process.env.SMTP_PORT || '587', 10);
     const smtpUser = process.env.SMTP_USER;

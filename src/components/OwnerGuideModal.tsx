@@ -1,5 +1,5 @@
 import React from 'react';
-import { X, Mail, Phone, Image, Globe, CheckSquare, Sparkles, Terminal, Copy, Check } from 'lucide-react';
+import { X, Mail, Phone, Image, Globe, CheckSquare, Sparkles, Terminal, Copy, Check, Lock, Edit3 } from 'lucide-react';
 
 interface OwnerGuideModalProps {
   isOpen: boolean;
@@ -52,15 +52,15 @@ export const OwnerGuideModal: React.FC<OwnerGuideModalProps> = ({ isOpen, onClos
           <div className="space-y-3 bg-slate-950 p-5 rounded-xl border border-slate-800">
             <div className="flex items-center gap-2 text-emerald-400 font-bold text-sm">
               <Mail className="w-4 h-4" />
-              <span>1. How to Connect Contact Form to Your Real Email Inbox</span>
+              <span>1. Configured Email Address (suhuyinifauzanadam@gmail.com)</span>
             </div>
             <p className="text-xs text-slate-300">
-              In your <code className="bg-slate-800 px-1.5 py-0.5 rounded text-emerald-300">.env</code> file (or host environment variables), set your real email address:
+              Your contact form is already configured to deliver directly to your email. In your <code className="bg-slate-800 px-1.5 py-0.5 rounded text-emerald-300">.env</code> file:
             </p>
             <div className="bg-slate-900 p-3 rounded-lg border border-slate-800 flex items-center justify-between text-xs font-mono">
-              <code>CONTACT_RECEIVER_EMAIL="yourname@gmail.com"</code>
+              <code>CONTACT_RECEIVER_EMAIL="suhuyinifauzanadam@gmail.com"</code>
               <button
-                onClick={() => copyToClipboard('CONTACT_RECEIVER_EMAIL="yourname@gmail.com"', 'env-email')}
+                onClick={() => copyToClipboard('CONTACT_RECEIVER_EMAIL="suhuyinifauzanadam@gmail.com"', 'env-email')}
                 className="p-1.5 text-slate-400 hover:text-white rounded bg-slate-800"
                 title="Copy"
               >
@@ -72,24 +72,24 @@ export const OwnerGuideModal: React.FC<OwnerGuideModalProps> = ({ isOpen, onClos
               <ul className="list-disc list-inside space-y-1 pl-1">
                 <li>Go to Google Account Security &gt; 2-Step Verification &gt; App Passwords.</li>
                 <li>Generate a 16-character App Password (e.g. <code>abcd efgh ijkl mnop</code>).</li>
-                <li>Fill in <code>SMTP_HOST="smtp.gmail.com"</code>, <code>SMTP_USER="yourname@gmail.com"</code>, and <code>SMTP_PASS="your_16_char_app_password"</code>.</li>
+                <li>Fill in <code>SMTP_HOST="smtp.gmail.com"</code>, <code>SMTP_USER="suhuyinifauzanadam@gmail.com"</code>, and <code>SMTP_PASS="your_16_char_app_password"</code>.</li>
               </ul>
             </div>
           </div>
 
-          {/* Section 2: Replace WhatsApp Number */}
+          {/* Section 2: WhatsApp & Call Number */}
           <div className="space-y-3 bg-slate-950 p-5 rounded-xl border border-slate-800">
             <div className="flex items-center gap-2 text-emerald-400 font-bold text-sm">
               <Phone className="w-4 h-4" />
-              <span>2. How to Set Your Real WhatsApp Number</span>
+              <span>2. Active WhatsApp & Phone (0204328042)</span>
             </div>
             <p className="text-xs text-slate-300">
-              In <code className="bg-slate-800 px-1.5 py-0.5 rounded text-emerald-300">.env</code> (or in your host environment settings):
+              Configured in <code className="bg-slate-800 px-1.5 py-0.5 rounded text-emerald-300">.env</code>:
             </p>
             <div className="bg-slate-900 p-3 rounded-lg border border-slate-800 flex items-center justify-between text-xs font-mono">
-              <code>VITE_WHATSAPP_NUMBER="233XXXXXXXXX"</code>
+              <code>VITE_WHATSAPP_NUMBER="233204328042"</code>
               <button
-                onClick={() => copyToClipboard('VITE_WHATSAPP_NUMBER="233XXXXXXXXX"', 'env-wa')}
+                onClick={() => copyToClipboard('VITE_WHATSAPP_NUMBER="233204328042"', 'env-wa')}
                 className="p-1.5 text-slate-400 hover:text-white rounded bg-slate-800"
                 title="Copy"
               >
@@ -97,23 +97,25 @@ export const OwnerGuideModal: React.FC<OwnerGuideModalProps> = ({ isOpen, onClos
               </button>
             </div>
             <p className="text-xs text-slate-400">
-              Use the Ghana international format starting with <code>233</code> without the <code>+</code> sign or leading zero (e.g., <code>233241234567</code>).
+              Users can call <code>0204328042</code> directly or tap the WhatsApp button to chat instantly.
             </p>
           </div>
 
-          {/* Section 3: Replace Sample Work with Real Work */}
+          {/* Section 3: Owner Picture & Project Editing Mode */}
           <div className="space-y-3 bg-slate-950 p-5 rounded-xl border border-slate-800">
             <div className="flex items-center gap-2 text-emerald-400 font-bold text-sm">
-              <Image className="w-4 h-4" />
-              <span>3. How to Update or Add Portfolio Projects</span>
+              <Edit3 className="w-4 h-4" />
+              <span>3. Live Picture & Portfolio Editing (Owner Portal)</span>
             </div>
             <p className="text-xs text-slate-300">
-              Open <code className="bg-slate-800 px-1.5 py-0.5 rounded text-emerald-300">/src/data/portfolioData.ts</code>.
+              Your visitors can freely read and browse your whole website without any password. When YOU want to edit or replace project pictures:
             </p>
             <ul className="list-disc list-inside space-y-1.5 text-xs text-slate-400 pl-1">
-              <li>Each project in <code>PORTFOLIO_ITEMS</code> has a title, image URL, shortDescription, fullDescription, and tags.</li>
-              <li>You can drop your flyer photos or export images into <code className="bg-slate-800 px-1 text-slate-300">/public/images/</code> and change the <code>image: '/images/my-flyer.png'</code> path.</li>
-              <li>When you complete real client work, you can update the status or title accordingly!</li>
+              <li>Click the small <strong>Lock icon</strong> hidden at the very bottom of the page (next to the copyright).</li>
+              <li>Enter your 4-digit PIN (either <code>1234</code> or <code>5678</code>) to unlock Owner Edit Mode.</li>
+              <li>Click <strong>Edit Picture & Details</strong> on any portfolio card to upload a new picture directly from your phone/computer or paste an image URL.</li>
+              <li>Click <strong>+ Add New Project Design</strong> to add a new project to your gallery.</li>
+              <li>Changes are automatically saved. Click <strong>Lock</strong> when you are done.</li>
             </ul>
           </div>
 
@@ -126,19 +128,19 @@ export const OwnerGuideModal: React.FC<OwnerGuideModalProps> = ({ isOpen, onClos
             <div className="space-y-2 text-xs text-slate-300">
               <div className="flex items-center gap-2">
                 <input type="checkbox" defaultChecked className="rounded accent-emerald-500" readOnly />
-                <span>Replace <code>YOUR_EMAIL@example.com</code> with your personal or business email</span>
+                <span>Contact email set to <code>suhuyinifauzanadam@gmail.com</code></span>
               </div>
               <div className="flex items-center gap-2">
                 <input type="checkbox" defaultChecked className="rounded accent-emerald-500" readOnly />
-                <span>Replace <code>YOUR_WHATSAPP_NUMBER</code> with your active Ghana WhatsApp number</span>
+                <span>WhatsApp and direct call set to <code>0204328042</code></span>
               </div>
               <div className="flex items-center gap-2">
                 <input type="checkbox" defaultChecked className="rounded accent-emerald-500" readOnly />
-                <span>Test sending a sample message through the contact form to confirm delivery</span>
+                <span>Public visitors can freely browse and read all sections</span>
               </div>
               <div className="flex items-center gap-2">
                 <input type="checkbox" defaultChecked className="rounded accent-emerald-500" readOnly />
-                <span>Add your own designed flyers or project screenshots to <code>/src/data/portfolioData.ts</code></span>
+                <span>Owner picture editing secured with PIN</span>
               </div>
             </div>
           </div>

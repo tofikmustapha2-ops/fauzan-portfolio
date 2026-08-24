@@ -78,17 +78,19 @@ export const Contact: React.FC<ContactProps> = ({
     }
   };
 
-  const whatsappNumber = import.meta.env.VITE_WHATSAPP_NUMBER || 'YOUR_WHATSAPP_NUMBER';
+  const whatsappNumber = import.meta.env.VITE_WHATSAPP_NUMBER || '233204328042';
+  const displayPhone = '0204328042';
+  const displayEmail = 'suhuyinifauzanadam@gmail.com';
 
   const handleWhatsAppDirect = () => {
-    if (whatsappNumber === 'YOUR_WHATSAPP_NUMBER') {
-      onOpenOwnerGuide();
-    } else {
-      const text = encodeURIComponent(
-        `Hello Adam, my name is ${formData.name || 'a prospective client'}. I would like to discuss ${formData.service || 'a design project'} with you.`
-      );
-      window.open(`https://wa.me/${whatsappNumber.replace(/[^0-9]/g, '')}?text=${text}`, '_blank');
-    }
+    const text = encodeURIComponent(
+      `Hello Adam, my name is ${formData.name || 'a prospective client'}. I would like to discuss ${formData.service || 'a design project'} with you.`
+    );
+    window.open(`https://wa.me/233204328042?text=${text}`, '_blank');
+  };
+
+  const handlePhoneCall = () => {
+    window.location.href = 'tel:0204328042';
   };
 
   return (
@@ -141,30 +143,33 @@ export const Contact: React.FC<ContactProps> = ({
                   </div>
                   <div>
                     <p className="text-xs text-slate-400">Direct Email:</p>
-                    <p className="text-sm font-semibold text-white">
-                      YOUR_EMAIL@example.com
-                    </p>
-                    <button
-                      onClick={onOpenOwnerGuide}
-                      className="text-[11px] text-emerald-400 hover:underline flex items-center gap-1 mt-0.5"
+                    <a
+                      href={`mailto:${displayEmail}`}
+                      className="text-sm font-semibold text-white hover:text-emerald-400 transition-colors block break-all"
                     >
-                      <HelpCircle className="w-3 h-3" />
-                      <span>Click to see how to replace with your real email</span>
-                    </button>
+                      {displayEmail}
+                    </a>
+                    <span className="text-[11px] text-slate-400">Direct delivery to personal inbox</span>
                   </div>
                 </div>
 
-                {/* WhatsApp Info */}
+                {/* WhatsApp & Call Info */}
                 <div className="flex items-start gap-3.5">
                   <div className="p-2.5 rounded-xl bg-slate-900 border border-slate-800 text-emerald-400 shrink-0">
                     <Phone className="w-4 h-4" />
                   </div>
                   <div>
-                    <p className="text-xs text-slate-400">WhatsApp / Phone:</p>
-                    <p className="text-sm font-semibold text-white">
-                      {whatsappNumber === 'YOUR_WHATSAPP_NUMBER' ? 'YOUR_WHATSAPP_NUMBER' : whatsappNumber}
-                    </p>
-                    <span className="text-[11px] text-slate-400">Fastest response for quotes & inquiries</span>
+                    <p className="text-xs text-slate-400">WhatsApp & Phone:</p>
+                    <div className="flex items-center gap-2">
+                      <a
+                        href="tel:0204328042"
+                        className="text-sm font-bold text-white hover:text-emerald-400 transition-colors"
+                      >
+                        0204328042
+                      </a>
+                      <span className="text-xs text-slate-500">(020 432 8042)</span>
+                    </div>
+                    <span className="text-[11px] text-emerald-400 font-medium">WhatsApp or Direct Phone Call</span>
                   </div>
                 </div>
 
@@ -175,14 +180,14 @@ export const Contact: React.FC<ContactProps> = ({
                   </div>
                   <div>
                     <p className="text-xs text-slate-400">Response Time:</p>
-                    <p className="text-sm font-semibold text-white">Usually within a few hours</p>
-                    <span className="text-[11px] text-slate-400">Monday to Saturday</span>
+                    <p className="text-sm font-semibold text-white">Fast response for Tamale clients</p>
+                    <span className="text-[11px] text-slate-400">Monday to Saturday • Open for Projects</span>
                   </div>
                 </div>
               </div>
 
-              {/* Direct WhatsApp Action Button */}
-              <div className="pt-4 border-t border-slate-800">
+              {/* Direct WhatsApp & Call Action Buttons */}
+              <div className="pt-4 border-t border-slate-800 space-y-2.5">
                 <button
                   type="button"
                   onClick={handleWhatsAppDirect}
@@ -190,10 +195,18 @@ export const Contact: React.FC<ContactProps> = ({
                   className="w-full flex items-center justify-center gap-2.5 py-3.5 px-4 rounded-xl font-bold text-xs sm:text-sm bg-emerald-600 hover:bg-emerald-500 text-white shadow-lg shadow-emerald-600/20 transition-all duration-200"
                 >
                   <Phone className="w-4 h-4" />
-                  <span>Chat With Me on WhatsApp</span>
+                  <span>Chat on WhatsApp (0204328042)</span>
                 </button>
-                <p className="text-center text-[11px] text-slate-400 mt-2">
-                  Preferred for quick local inquiries in Tamale
+                <a
+                  href="tel:0204328042"
+                  id="direct-call-contact-btn"
+                  className="w-full flex items-center justify-center gap-2.5 py-3 px-4 rounded-xl font-semibold text-xs sm:text-sm bg-slate-900 hover:bg-slate-800 text-slate-200 border border-slate-700/80 transition-all duration-200"
+                >
+                  <Phone className="w-4 h-4 text-emerald-400" />
+                  <span>Call 0204328042 Directly</span>
+                </a>
+                <p className="text-center text-[11px] text-slate-400 mt-1">
+                  Fastest response for design quotes & inquiries in Tamale
                 </p>
               </div>
             </div>

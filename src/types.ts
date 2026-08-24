@@ -31,3 +31,39 @@ export interface ContactFormData {
   service: ServiceType;
   message: string;
 }
+
+export interface OwnerSettings {
+  name: string;
+  title: string;
+  logoType: 'initials' | 'image';
+  logoInitials: string;
+  logoColorGradient: string;
+  logoImage: string;
+  phone: string;
+  whatsappNumber: string;
+  email: string;
+  location: string;
+  heroHeadline: string;
+  heroSubheadline: string;
+  aboutBio1: string;
+  aboutBio2: string;
+  passcode: string;
+}
+
+export const DEFAULT_OWNER_SETTINGS: OwnerSettings = {
+  name: 'Adam Suhuyini Fauzan',
+  title: 'Digital Designer • Tamale, Ghana',
+  logoType: 'initials',
+  logoInitials: 'AF',
+  logoColorGradient: 'from-emerald-500 to-teal-700',
+  logoImage: '',
+  phone: '0204328042',
+  whatsappNumber: '233204328042',
+  email: 'suhuyinifauzanadam@gmail.com',
+  location: 'Tamale, Northern Region, Ghana',
+  heroHeadline: 'Helping Tamale Businesses Look Professional Online.',
+  heroSubheadline: 'I help small businesses, shops, and entrepreneurs promote their services with attractive flyer designs, high-impact social media graphics, and clean, mobile-friendly websites.',
+  aboutBio1: 'Hello! I am Adam Suhuyini Fauzan, a dedicated digital skills student and beginner digital designer based in Tamale, Ghana.',
+  aboutBio2: 'I am actively developing my craft in graphic design and modern web development. My primary mission is to help local small businesses, shops, salons, restaurants, and young entrepreneurs create attractive promotional materials, eye-catching flyers, and clean one-page websites.',
+  passcode: '1234',
+};
