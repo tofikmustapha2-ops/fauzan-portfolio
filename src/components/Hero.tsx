@@ -1,7 +1,14 @@
 import React from 'react';
 import { ArrowRight, MessageSquare, Sparkles, Layout, Image as ImageIcon, Globe, CheckCircle2, ShieldCheck, MapPin } from 'lucide-react';
+import { OwnerSettings, DEFAULT_OWNER_SETTINGS } from '../types';
 
-export const Hero: React.FC = () => {
+interface HeroProps {
+  ownerSettings?: OwnerSettings;
+}
+
+export const Hero: React.FC<HeroProps> = ({
+  ownerSettings = DEFAULT_OWNER_SETTINGS,
+}) => {
   return (
     <section
       id="home"
@@ -28,17 +35,23 @@ export const Hero: React.FC = () => {
                 <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
               </span>
               <MapPin className="w-3.5 h-3.5 text-emerald-400 inline" />
-              <span>Available for Local Businesses in Tamale, Ghana</span>
+              <span>Available for Local Businesses in {ownerSettings.location}</span>
             </div>
 
             {/* Headline */}
             <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-extrabold tracking-tight text-white leading-tight sm:leading-tight">
-              Helping <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 via-teal-300 to-cyan-400">Tamale Businesses</span> Look Professional Online.
+              {ownerSettings.heroHeadline || (
+                <>Helping <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 via-teal-300 to-cyan-400">Tamale Businesses</span> Look Professional Online.</>
+              )}
             </h1>
 
             {/* Description */}
             <p className="text-base sm:text-lg text-slate-300 max-w-2xl mx-auto lg:mx-0 leading-relaxed">
-              Hi, I’m <strong className="text-white font-semibold">Adam Suhuyini Fauzan</strong>. I help small businesses, shops, and entrepreneurs promote their services with attractive flyer designs, high-impact social media graphics, and clean, mobile-friendly websites.
+              {ownerSettings.heroSubheadline ? (
+                <span>{ownerSettings.heroSubheadline}</span>
+              ) : (
+                <>Hi, I’m <strong className="text-white font-semibold">{ownerSettings.name}</strong>. I help small businesses, shops, and entrepreneurs promote their services with attractive flyer designs, high-impact social media graphics, and clean, mobile-friendly websites.</>
+              )}
             </p>
 
             {/* Action Buttons */}
@@ -172,12 +185,20 @@ export const Hero: React.FC = () => {
 
               {/* Floating Badge */}
               <div className="absolute -bottom-5 -left-4 sm:-left-6 bg-slate-900/95 border border-slate-700 text-white px-4 py-2.5 rounded-xl shadow-xl backdrop-blur-md hidden sm:flex items-center gap-3">
-                <div className="w-8 h-8 rounded-lg bg-emerald-500/20 text-emerald-400 flex items-center justify-center font-bold">
-                  GH
-                </div>
+                {ownerSettings.profileImage ? (
+                  <img
+                    src={ownerSettings.profileImage}
+                    alt={ownerSettings.name}
+                    className="w-9 h-9 rounded-lg object-cover border border-emerald-400/50 shadow"
+                  />
+                ) : (
+                  <div className="w-8 h-8 rounded-lg bg-emerald-500/20 text-emerald-400 flex items-center justify-center font-bold text-xs">
+                    GH
+                  </div>
+                )}
                 <div className="text-left">
-                  <p className="text-xs font-bold leading-none">Northern Region</p>
-                  <p className="text-[11px] text-slate-400">Tamale, Ghana</p>
+                  <p className="text-xs font-bold leading-none text-white">{ownerSettings.name}</p>
+                  <p className="text-[11px] text-slate-400">{ownerSettings.location}</p>
                 </div>
               </div>
             </div>

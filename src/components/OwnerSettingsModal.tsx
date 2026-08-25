@@ -12,16 +12,18 @@ import {
   Mail, 
   MapPin, 
   Type, 
-  Palette, 
   Lock, 
   AlertCircle,
-  RefreshCw
+  RefreshCw,
+  Camera,
+  Trash2
 } from 'lucide-react';
 import { OwnerSettings, DEFAULT_OWNER_SETTINGS } from '../types';
 
 interface OwnerSettingsModalProps {
   isOpen: boolean;
   settings: OwnerSettings;
+  initialTab?: 'profile' | 'logo' | 'passcode' | 'contact' | 'content';
   onClose: () => void;
   onSave: (newSettings: OwnerSettings) => void;
   onResetDefaults: () => void;
@@ -36,18 +38,39 @@ const GRADIENT_PRESETS = [
   { name: 'Cyan & Sky', value: 'from-cyan-500 to-sky-700' },
 ];
 
+const SAMPLE_PROFILE_PRESETS = [
+  {
+    name: 'Professional Portrait 1',
+    url: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=600&auto=format&fit=crop&q=80',
+  },
+  {
+    name: 'Creative Studio Headshot',
+    url: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=600&auto=format&fit=crop&q=80',
+  },
+  {
+    name: 'Modern Designer Portrait',
+    url: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=600&auto=format&fit=crop&q=80',
+  },
+  {
+    name: 'Minimal Tech Portrait',
+    url: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=600&auto=format&fit=crop&q=80',
+  },
+];
+
 export const OwnerSettingsModal: React.FC<OwnerSettingsModalProps> = ({
   isOpen,
   settings,
+  initialTab = 'profile',
   onClose,
   onSave,
   onResetDefaults,
 }) => {
-  const [activeTab, setActiveTab] = useState<'logo' | 'passcode' | 'contact' | 'content'>('logo');
+  const [activeTab, setActiveTab] = useState<'profile' | 'logo' | 'passcode' | 'contact' | 'content'>(initialTab);
   
   // Form states
   const [name, setName] = useState(settings.name);
   const [title, setTitle] = useState(settings.title);
+  const [profileImage, setProfileImage] = useState(settings.profileImage || '');
   const [logoType, setLogoType] = useState<'initials' | 'image'>(settings.logoType);
   const [logoInitials, setLogoInitials] = useState(settings.logoInitials);
   const [logoColorGradient, setLogoColorGradient] = useState(settings.logoColorGradient);
@@ -68,12 +91,15 @@ export const OwnerSettingsModal: React.FC<OwnerSettingsModalProps> = ({
   const [passcodeError, setPasscodeError] = useState<string | null>(null);
   const [passcodeSuccess, setPasscodeSuccess] = useState(false);
 
-  const fileInputRef = useRef<HTMLInputElement>(null);
+  const profileFileInputRef = useRef<HTMLInputElement>(null);
+  const logoFileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     if (isOpen) {
+      setActiveTab(initialTab);
       setName(settings.name);
       setTitle(settings.title);
+      setProfileImage(settings.profileImage || '');
       setLogoType(settings.logoType);
       setLogoInitials(settings.logoInitials);
       setLogoColorGradient(settings.logoColorGradient);
@@ -94,11 +120,24 @@ export const OwnerSettingsModal: React.FC<OwnerSettingsModalProps> = ({
       setPasscodeError(null);
       setPasscodeSuccess(false);
     }
-  }, [isOpen, settings]);
+  }, [isOpen, settings, initialTab]);
 
   if (!isOpen) return null;
 
-  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleProfileImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        if (typeof reader.result === 'string') {
+          setProfileImage(reader.result);
+        }
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleLogoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
       const reader = new FileReader();
@@ -151,6 +190,7 @@ export const OwnerSettingsModal: React.FC<OwnerSettingsModalProps> = ({
       ...settings,
       name: name.trim() || DEFAULT_OWNER_SETTINGS.name,
       title: title.trim() || DEFAULT_OWNER_SETTINGS.title,
+      profileImage: profileImage.trim(),
       logoType,
       logoInitials: logoInitials.trim().slice(0, 3).toUpperCase() || 'AF',
       logoColorGradient,
@@ -196,19 +236,33 @@ export const OwnerSettingsModal: React.FC<OwnerSettingsModalProps> = ({
           </div>
           <div>
             <h2 className="text-xl font-bold text-white flex items-center gap-2">
-              <span>Owner Customization & Brand Settings</span>
+              <span>Owner Customization Portal</span>
               <span className="text-[10px] px-2 py-0.5 rounded-full bg-emerald-500 text-slate-950 font-bold uppercase">
-                Owner Only
+                Owner Access
               </span>
             </h2>
             <p className="text-xs text-slate-400">
-              Customize your brand logo, change your 4-digit passcode, and update your personal info.
+              Change your profile picture, brand logo, 4-digit passcode, and personal bio anytime.
             </p>
           </div>
         </div>
 
         {/* Navigation Tabs */}
-        <div className="flex flex-wrap items-center gap-2 p-1 bg-slate-950 rounded-2xl border border-slate-800 mb-6">
+        <div className="flex flex-wrap items-center gap-2 p-1.5 bg-slate-950 rounded-2xl border border-slate-800 mb-6">
+          <button
+            type="button"
+            id="tab-profile-picture"
+            onClick={() => setActiveTab('profile')}
+            className={`flex-1 min-w-[120px] py-2.5 px-3 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-2 ${
+              activeTab === 'profile'
+                ? 'bg-emerald-500 text-slate-950 shadow-md shadow-emerald-500/20'
+                : 'text-slate-400 hover:text-white hover:bg-slate-900'
+            }`}
+          >
+            <Camera className="w-3.5 h-3.5" />
+            <span>Profile Picture</span>
+          </button>
+
           <button
             type="button"
             id="tab-logo-branding"
@@ -220,7 +274,7 @@ export const OwnerSettingsModal: React.FC<OwnerSettingsModalProps> = ({
             }`}
           >
             <ImageIcon className="w-3.5 h-3.5" />
-            <span>Logo & Branding</span>
+            <span>Logo & Monogram</span>
           </button>
 
           <button
@@ -262,19 +316,145 @@ export const OwnerSettingsModal: React.FC<OwnerSettingsModalProps> = ({
             }`}
           >
             <Type className="w-3.5 h-3.5" />
-            <span>Hero & Bio Text</span>
+            <span>Bio & Headlines</span>
           </button>
         </div>
 
-        {/* TAB 1: LOGO & BRANDING */}
+        {/* TAB 1: PROFILE PICTURE / PORTRAIT */}
+        {activeTab === 'profile' && (
+          <div className="space-y-6">
+            {/* Live Profile Picture Preview */}
+            <div className="bg-slate-950 p-5 rounded-2xl border border-slate-800 flex flex-col sm:flex-row items-center justify-between gap-6">
+              <div className="space-y-1 text-center sm:text-left">
+                <span className="text-xs font-bold text-emerald-400 uppercase tracking-wider">Live Profile Preview</span>
+                <h4 className="text-sm font-semibold text-white">Your Personal Headshot & About Section Portrait</h4>
+                <p className="text-xs text-slate-400">
+                  This picture represents you across your portfolio and about section.
+                </p>
+              </div>
+
+              {/* Profile Photo Display with Badge */}
+              <div className="relative group shrink-0">
+                {profileImage ? (
+                  <img
+                    src={profileImage}
+                    alt={name}
+                    className="w-24 h-24 sm:w-28 sm:h-28 rounded-2xl object-cover border-2 border-emerald-500 shadow-xl"
+                  />
+                ) : (
+                  <div
+                    className={`w-24 h-24 sm:w-28 sm:h-28 rounded-2xl bg-gradient-to-br ${logoColorGradient} flex items-center justify-center text-white font-extrabold text-3xl shadow-xl border-2 border-emerald-500/50`}
+                  >
+                    {logoInitials || 'AF'}
+                  </div>
+                )}
+                <button
+                  type="button"
+                  onClick={() => profileFileInputRef.current?.click()}
+                  className="absolute -bottom-2 -right-2 p-2 rounded-xl bg-emerald-500 text-slate-950 hover:bg-emerald-400 shadow-lg transition-transform hover:scale-110"
+                  title="Upload new photo"
+                >
+                  <Camera className="w-4 h-4" />
+                </button>
+              </div>
+            </div>
+
+            {/* Upload Controls */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              {/* Option A: Upload from device */}
+              <div className="p-4 rounded-2xl border bg-slate-950/70 border-slate-800 space-y-3">
+                <span className="text-xs font-bold text-white flex items-center gap-1.5">
+                  <Upload className="w-4 h-4 text-emerald-400" />
+                  <span>Upload Photo from Phone / Computer</span>
+                </span>
+                
+                <input
+                  type="file"
+                  ref={profileFileInputRef}
+                  onChange={handleProfileImageUpload}
+                  accept="image/*"
+                  className="hidden"
+                  id="owner-profile-file-input"
+                />
+
+                <button
+                  type="button"
+                  onClick={() => profileFileInputRef.current?.click()}
+                  className="w-full py-4 border-2 border-dashed border-slate-700 hover:border-emerald-500 rounded-xl bg-slate-900/60 hover:bg-slate-900 flex flex-col items-center justify-center gap-1 text-xs text-slate-300 transition-all cursor-pointer group"
+                >
+                  <Camera className="w-6 h-6 text-emerald-400 group-hover:scale-110 transition-transform" />
+                  <span className="font-semibold text-white">Choose Profile Picture</span>
+                  <span className="text-[10px] text-slate-500">Supports JPG, PNG, WEBP from your camera or files</span>
+                </button>
+
+                {profileImage && (
+                  <button
+                    type="button"
+                    onClick={() => setProfileImage('')}
+                    className="w-full py-2 px-3 rounded-xl text-xs text-rose-400 hover:bg-rose-500/10 border border-rose-500/20 transition-colors flex items-center justify-center gap-1.5"
+                  >
+                    <Trash2 className="w-3.5 h-3.5" />
+                    <span>Remove Custom Photo (Use Monogram)</span>
+                  </button>
+                )}
+              </div>
+
+              {/* Option B: Image URL Input */}
+              <div className="p-4 rounded-2xl border bg-slate-950/70 border-slate-800 space-y-3">
+                <span className="text-xs font-bold text-white flex items-center gap-1.5">
+                  <ImageIcon className="w-4 h-4 text-emerald-400" />
+                  <span>Paste Profile Image Web Link</span>
+                </span>
+                
+                <div>
+                  <label className="block text-[11px] text-slate-400 mb-1">Direct Image URL:</label>
+                  <input
+                    type="url"
+                    value={profileImage}
+                    onChange={(e) => setProfileImage(e.target.value)}
+                    placeholder="https://example.com/my-photo.jpg"
+                    className="w-full bg-slate-900 border border-slate-800 focus:border-emerald-500 rounded-xl px-3 py-2 text-xs text-white"
+                  />
+                </div>
+
+                <div className="pt-1">
+                  <span className="text-[11px] text-slate-400 block mb-1.5">Or Choose a Sample Preset:</span>
+                  <div className="grid grid-cols-2 gap-1.5">
+                    {SAMPLE_PROFILE_PRESETS.map((preset, idx) => (
+                      <button
+                        key={idx}
+                        type="button"
+                        onClick={() => setProfileImage(preset.url)}
+                        className={`p-1.5 rounded-lg text-[10px] text-left border flex items-center gap-2 transition-colors ${
+                          profileImage === preset.url
+                            ? 'border-emerald-500 bg-emerald-500/10 text-emerald-300 font-semibold'
+                            : 'border-slate-800 bg-slate-900 text-slate-400 hover:border-slate-700'
+                        }`}
+                      >
+                        <img
+                          src={preset.url}
+                          alt={preset.name}
+                          className="w-5 h-5 rounded-full object-cover shrink-0"
+                        />
+                        <span className="truncate">{preset.name}</span>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* TAB 2: LOGO & BRANDING */}
         {activeTab === 'logo' && (
           <div className="space-y-6">
             {/* Live Logo Preview Box */}
             <div className="bg-slate-950 p-5 rounded-2xl border border-slate-800 flex flex-col sm:flex-row items-center justify-between gap-6">
               <div className="space-y-1 text-center sm:text-left">
                 <span className="text-xs font-bold text-emerald-400 uppercase tracking-wider">Live Logo Preview</span>
-                <h4 className="text-sm font-semibold text-white">How your logo appears in the Header & Profile</h4>
-                <p className="text-xs text-slate-400">Visitors will see this branding across the whole site.</p>
+                <h4 className="text-sm font-semibold text-white">How your logo appears in the Header & Footer</h4>
+                <p className="text-xs text-slate-400">Visitors will see this branding in the navigation bar.</p>
               </div>
 
               {/* Logo Preview Element */}
@@ -373,7 +553,7 @@ export const OwnerSettingsModal: React.FC<OwnerSettingsModalProps> = ({
                 <div className="flex items-center justify-between mb-3">
                   <span className="text-xs font-bold text-white flex items-center gap-1.5">
                     <ImageIcon className="w-4 h-4 text-emerald-400" />
-                    <span>Option B: Custom Logo Picture / Avatar</span>
+                    <span>Option B: Brand Logo Graphic</span>
                   </span>
                   <input
                     type="radio"
@@ -386,20 +566,20 @@ export const OwnerSettingsModal: React.FC<OwnerSettingsModalProps> = ({
                 <div className="space-y-3">
                   <input
                     type="file"
-                    ref={fileInputRef}
-                    onChange={handleFileUpload}
+                    ref={logoFileInputRef}
+                    onChange={handleLogoUpload}
                     accept="image/*"
                     className="hidden"
                     id="owner-logo-file-input"
                   />
                   <button
                     type="button"
-                    onClick={() => fileInputRef.current?.click()}
+                    onClick={() => logoFileInputRef.current?.click()}
                     className="w-full py-3 border-2 border-dashed border-slate-700 hover:border-emerald-500 rounded-xl bg-slate-900/50 hover:bg-slate-900 flex flex-col items-center justify-center gap-1 text-xs text-slate-300 transition-all cursor-pointer"
                   >
                     <Upload className="w-4 h-4 text-emerald-400" />
-                    <span className="font-semibold">Upload Logo from Phone or PC</span>
-                    <span className="text-[10px] text-slate-500">Supports PNG (with transparency), JPG, WEBP</span>
+                    <span className="font-semibold">Upload Logo from Device</span>
+                    <span className="text-[10px] text-slate-500">PNG (transparent), JPG, WEBP</span>
                   </button>
 
                   <div>
@@ -421,7 +601,7 @@ export const OwnerSettingsModal: React.FC<OwnerSettingsModalProps> = ({
           </div>
         )}
 
-        {/* TAB 2: CHANGE PASSCODE (PIN) */}
+        {/* TAB 3: CHANGE PASSCODE (PIN) */}
         {activeTab === 'passcode' && (
           <div className="space-y-5">
             <div className="bg-slate-950 p-5 rounded-2xl border border-slate-800">
@@ -430,7 +610,7 @@ export const OwnerSettingsModal: React.FC<OwnerSettingsModalProps> = ({
                 <span>Change Your Owner 4-Digit Passcode</span>
               </div>
               <p className="text-xs text-slate-400 leading-relaxed">
-                Choose a private 4-digit PIN known only to you. You will use this code to unlock owner editing mode and modify pictures or projects anytime.
+                Choose a private 4-digit PIN known only to you. You will use this code to unlock owner editing mode and modify pictures, logo, or projects anytime.
               </p>
 
               {passcodeError && (
@@ -509,7 +689,7 @@ export const OwnerSettingsModal: React.FC<OwnerSettingsModalProps> = ({
           </div>
         )}
 
-        {/* TAB 3: CONTACT & WHATSAPP */}
+        {/* TAB 4: CONTACT & WHATSAPP */}
         {activeTab === 'contact' && (
           <div className="space-y-4">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -600,7 +780,7 @@ export const OwnerSettingsModal: React.FC<OwnerSettingsModalProps> = ({
           </div>
         )}
 
-        {/* TAB 4: HERO & BIO TEXT */}
+        {/* TAB 5: HERO & BIO TEXT */}
         {activeTab === 'content' && (
           <div className="space-y-4">
             <div>

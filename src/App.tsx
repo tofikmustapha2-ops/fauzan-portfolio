@@ -15,20 +15,37 @@ import { Footer } from './components/Footer';
 import { OwnerGuideModal } from './components/OwnerGuideModal';
 import { PasscodeLock } from './components/PasscodeLock';
 import { EditProjectModal } from './components/EditProjectModal';
+import { OwnerSettingsModal } from './components/OwnerSettingsModal';
 import { PORTFOLIO_ITEMS } from './data/portfolioData';
-import { PortfolioItem, ServiceType } from './types';
-import { Lock, ShieldCheck, Clock, Plus, RefreshCw, CheckCircle2 } from 'lucide-react';
+import { PortfolioItem, ServiceType, OwnerSettings, DEFAULT_OWNER_SETTINGS } from './types';
+import { Lock, ShieldCheck, Clock, Plus, RefreshCw, CheckCircle2, Sliders } from 'lucide-react';
 
 const STORAGE_KEY = 'af_portfolio_items_v1';
+const OWNER_SETTINGS_KEY = 'af_owner_settings_v1';
 
 export default function App() {
   const [selectedService, setSelectedService] = useState<ServiceType>('Flyer & Poster Design');
   const [isOwnerGuideOpen, setIsOwnerGuideOpen] = useState(false);
   const [isPasscodeModalOpen, setIsPasscodeModalOpen] = useState(false);
+  const [isOwnerSettingsOpen, setIsOwnerSettingsOpen] = useState(false);
+  const [ownerSettingsTab, setOwnerSettingsTab] = useState<'profile' | 'logo' | 'passcode' | 'contact' | 'content'>('profile');
   
   // Public by default: Everyone can see and read immediately without passcode
   const [isOwnerMode, setIsOwnerMode] = useState(false);
   
+  // Owner brand & security settings state (Logo, name, title, contact, passcode)
+  const [ownerSettings, setOwnerSettings] = useState<OwnerSettings>(() => {
+    try {
+      const saved = localStorage.getItem(OWNER_SETTINGS_KEY);
+      if (saved) {
+        return { ...DEFAULT_OWNER_SETTINGS, ...JSON.parse(saved) };
+      }
+    } catch (e) {
+      console.error('Error loading owner settings from storage:', e);
+    }
+    return DEFAULT_OWNER_SETTINGS;
+  });
+
   // Portfolio items with local storage persistence
   const [portfolioItems, setPortfolioItems] = useState<PortfolioItem[]>(() => {
     try {
@@ -63,12 +80,13 @@ export default function App() {
   const handleLock = useCallback(() => {
     setIsOwnerMode(false);
     setIsEditModalOpen(false);
+    setIsOwnerSettingsOpen(false);
     showToast('🔒 Owner Edit Mode locked.');
   }, []);
 
   const handleUnlock = () => {
     setIsOwnerMode(true);
-    showToast('✨ Owner Edit Mode unlocked! You can now edit pictures and projects.');
+    showToast('✨ Owner Mode unlocked! You can now edit pictures, logo, projects & settings.');
     resetAutoLockTimer();
   };
 
@@ -131,6 +149,26 @@ export default function App() {
     };
   }, [isOwnerMode, resetAutoLockTimer, handleLock]);
 
+  // Save changes to owner brand & passcode settings
+  const handleSaveOwnerSettings = (updated: OwnerSettings) => {
+    setOwnerSettings(updated);
+    try {
+      localStorage.setItem(OWNER_SETTINGS_KEY, JSON.stringify(updated));
+    } catch (e) {
+      console.error('Error saving owner settings to localStorage:', e);
+    }
+    showToast('✅ Brand logo, info, and passcode updated successfully.');
+  };
+
+  // Reset owner settings to defaults
+  const handleResetOwnerSettings = () => {
+    if (confirm('Reset logo and owner settings back to original defaults?')) {
+      setOwnerSettings(DEFAULT_OWNER_SETTINGS);
+      localStorage.removeItem(OWNER_SETTINGS_KEY);
+      showToast('Brand settings reset to original defaults.');
+    }
+  };
+
   // Save changes to a project
   const handleSaveProject = (updatedItem: PortfolioItem) => {
     let updatedList: PortfolioItem[];
@@ -189,13 +227,29 @@ export default function App() {
     return `${m}:${s < 10 ? '0' : ''}${s}`;
   };
 
+  const handleOpenOwnerSettings = (tab: 'profile' | 'logo' | 'passcode' | 'contact' | 'content' = 'profile') => {
+    setOwnerSettingsTab(tab);
+    setIsOwnerSettingsOpen(true);
+  };
+
   return (
     <div className="min-h-screen bg-slate-950 text-slate-100 flex flex-col selection:bg-emerald-500 selection:text-slate-950 relative">
-      {/* Owner Passcode Unlock Modal (Triggered by Owner button, PIN 1234) */}
+      {/* Owner Passcode Unlock Modal (Protected by PIN) */}
       <PasscodeLock
         isOpen={isPasscodeModalOpen}
         onClose={() => setIsPasscodeModalOpen(false)}
         onSuccess={handleUnlock}
+        correctPasscode={ownerSettings.passcode}
+      />
+
+      {/* Owner Brand & Security Settings Modal (Profile Picture, Logo, PIN, Bio, Contact) */}
+      <OwnerSettingsModal
+        isOpen={isOwnerSettingsOpen}
+        initialTab={ownerSettingsTab}
+        onClose={() => setIsOwnerSettingsOpen(false)}
+        settings={ownerSettings}
+        onSave={handleSaveOwnerSettings}
+        onResetDefaults={handleResetOwnerSettings}
       />
 
       {/* Edit Project / Picture Modal */}
@@ -238,11 +292,21 @@ export default function App() {
           </div>
 
           <button
+            onClick={() => handleOpenOwnerSettings('profile')}
+            id="floating-profile-photo-btn"
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-emerald-300 border border-emerald-500/30 text-xs font-semibold transition-colors"
+          >
+            <Sliders className="w-3.5 h-3.5 text-emerald-400" />
+            <span>Profile Photo & Info</span>
+          </button>
+
+          <button
             onClick={() => {
               setEditingItem(null);
               setIsNewProject(true);
               setIsEditModalOpen(true);
             }}
+            id="floating-add-project-btn"
             className="flex items-center gap-1 px-3 py-1.5 rounded-xl bg-emerald-500 text-slate-950 font-bold hover:bg-emerald-400 text-xs shadow-sm transition-colors"
           >
             <Plus className="w-3.5 h-3.5" />
@@ -275,15 +339,22 @@ export default function App() {
         isOwnerMode={isOwnerMode}
         onOpenOwnerLogin={() => setIsPasscodeModalOpen(true)}
         onLock={handleLock}
+        ownerSettings={ownerSettings}
+        onOpenOwnerSettings={() => handleOpenOwnerSettings('logo')}
       />
 
       {/* Main Single-Page Sections (Visible & readable to everyone) */}
       <main className="flex-grow">
         {/* Hero Section */}
-        <Hero />
+        <Hero ownerSettings={ownerSettings} />
 
-        {/* About Me Section */}
-        <About />
+        {/* About Me Section with Profile Picture and Owner Photo Controls */}
+        <About
+          ownerSettings={ownerSettings}
+          isOwnerMode={isOwnerMode}
+          onOpenOwnerSettings={handleOpenOwnerSettings}
+          onOpenOwnerLogin={() => setIsPasscodeModalOpen(true)}
+        />
 
         {/* My Three Main Services */}
         <Services onSelectService={handleSelectService} />
@@ -314,6 +385,7 @@ export default function App() {
           selectedService={selectedService}
           onServiceChange={setSelectedService}
           onOpenOwnerGuide={() => setIsOwnerGuideOpen(true)}
+          ownerSettings={ownerSettings}
         />
       </main>
 
@@ -323,6 +395,8 @@ export default function App() {
         isOwnerMode={isOwnerMode}
         onOpenOwnerLogin={() => setIsPasscodeModalOpen(true)}
         onLock={handleLock}
+        ownerSettings={ownerSettings}
+        onOpenOwnerSettings={() => setIsOwnerSettingsOpen(true)}
       />
 
       {/* Owner Setup Guide Modal */}

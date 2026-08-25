@@ -1,11 +1,14 @@
 import React from 'react';
-import { ArrowUp, Heart, MapPin, Phone, Mail, Lock, Unlock, ShieldCheck, KeyRound } from 'lucide-react';
+import { ArrowUp, Heart, MapPin, Phone, Mail, Lock, Unlock, ShieldCheck, KeyRound, Sliders } from 'lucide-react';
+import { OwnerSettings, DEFAULT_OWNER_SETTINGS } from '../types';
 
 interface FooterProps {
   onOpenOwnerGuide: () => void;
   isOwnerMode?: boolean;
   onOpenOwnerLogin?: () => void;
   onLock?: () => void;
+  ownerSettings?: OwnerSettings;
+  onOpenOwnerSettings?: () => void;
 }
 
 export const Footer: React.FC<FooterProps> = ({
@@ -13,6 +16,8 @@ export const Footer: React.FC<FooterProps> = ({
   isOwnerMode = false,
   onOpenOwnerLogin,
   onLock,
+  ownerSettings = DEFAULT_OWNER_SETTINGS,
+  onOpenOwnerSettings,
 }) => {
   const scrollToTop = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -27,28 +32,36 @@ export const Footer: React.FC<FooterProps> = ({
           {/* Col 1: Brand & Tagline */}
           <div className="md:col-span-2 space-y-3">
             <div className="flex items-center gap-3">
-              <div className="w-8 h-8 rounded-lg bg-emerald-500 flex items-center justify-center text-slate-950 font-bold text-sm">
-                AF
-              </div>
+              {ownerSettings.logoType === 'image' && ownerSettings.logoImage ? (
+                <img
+                  src={ownerSettings.logoImage}
+                  alt={ownerSettings.name}
+                  className="w-8 h-8 rounded-lg object-cover border border-emerald-500/40"
+                />
+              ) : (
+                <div className={`w-8 h-8 rounded-lg bg-gradient-to-br ${ownerSettings.logoColorGradient || 'from-emerald-500 to-teal-700'} flex items-center justify-center text-white font-bold text-sm shadow-sm`}>
+                  {ownerSettings.logoInitials || 'AF'}
+                </div>
+              )}
               <span className="text-base font-bold text-white tracking-tight">
-                Adam Suhuyini Fauzan
+                {ownerSettings.name}
               </span>
             </div>
             <p className="text-xs text-slate-400 max-w-sm leading-relaxed">
-              Digital skills student and beginner digital designer dedicated to creating attractive promotional flyers, social media graphics, and clean 1-page websites for local businesses in Tamale, Ghana.
+              {ownerSettings.title} dedicated to creating attractive promotional flyers, social media graphics, and clean 1-page websites for local businesses in {ownerSettings.location}.
             </p>
             <div className="flex flex-col gap-1.5 pt-1 text-xs">
               <div className="flex items-center gap-1.5 text-emerald-400">
                 <MapPin className="w-3.5 h-3.5" />
-                <span>Tamale, Northern Region, Ghana</span>
+                <span>{ownerSettings.location}</span>
               </div>
               <div className="flex items-center gap-1.5 text-slate-300">
                 <Phone className="w-3.5 h-3.5 text-emerald-400" />
-                <a href="tel:0204328042" className="hover:text-emerald-400">0204328042 (WhatsApp / Call)</a>
+                <a href={`tel:${ownerSettings.phone}`} className="hover:text-emerald-400">{ownerSettings.phone} (WhatsApp / Call)</a>
               </div>
               <div className="flex items-center gap-1.5 text-slate-300">
                 <Mail className="w-3.5 h-3.5 text-emerald-400" />
-                <a href="mailto:suhuyinifauzanadam@gmail.com" className="hover:text-emerald-400">suhuyinifauzanadam@gmail.com</a>
+                <a href={`mailto:${ownerSettings.email}`} className="hover:text-emerald-400">{ownerSettings.email}</a>
               </div>
             </div>
           </div>
@@ -90,13 +103,21 @@ export const Footer: React.FC<FooterProps> = ({
         {/* Bottom Bar with Discreet Owner Entry */}
         <div className="pt-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs">
           <div className="flex items-center gap-2 text-slate-400 text-center sm:text-left">
-            <span>© 2026 Adam Suhuyini Fauzan. All rights reserved.</span>
+            <span>© 2026 {ownerSettings.name}. All rights reserved.</span>
             
             {/* Hidden / Discreet Owner Lock Entry at the bottom */}
             {isOwnerMode ? (
               <span className="inline-flex items-center gap-1.5 ml-2 px-2 py-0.5 rounded-md bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 text-[11px]">
                 <ShieldCheck className="w-3 h-3" />
                 <span>Owner Mode Active</span>
+                {onOpenOwnerSettings && (
+                  <button
+                    onClick={onOpenOwnerSettings}
+                    className="ml-1 text-emerald-300 hover:text-white underline font-medium"
+                  >
+                    (Brand Settings)
+                  </button>
+                )}
                 <button
                   onClick={onLock}
                   className="ml-1 text-rose-400 hover:text-rose-300 underline font-medium"

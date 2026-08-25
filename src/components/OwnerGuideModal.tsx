@@ -101,21 +101,23 @@ export const OwnerGuideModal: React.FC<OwnerGuideModalProps> = ({ isOpen, onClos
             </p>
           </div>
 
-          {/* Section 3: Owner Picture & Project Editing Mode */}
+          {/* Section 3: Owner Picture, Logo & Passcode Customization */}
           <div className="space-y-3 bg-slate-950 p-5 rounded-xl border border-slate-800">
             <div className="flex items-center gap-2 text-emerald-400 font-bold text-sm">
               <Edit3 className="w-4 h-4" />
-              <span>3. Live Picture & Portfolio Editing (Owner Portal)</span>
+              <span>3. Live Profile Picture, Logo & Passcode Customization (Owner Portal)</span>
             </div>
             <p className="text-xs text-slate-300">
-              Your visitors can freely read and browse your whole website without any password. When YOU want to edit or replace project pictures:
+              Your visitors can freely read and browse your whole website without any password. When YOU want to customize your profile picture, brand logo, replace pictures, or change your passcode:
             </p>
             <ul className="list-disc list-inside space-y-1.5 text-xs text-slate-400 pl-1">
-              <li>Click the small <strong>Lock icon</strong> hidden at the very bottom of the page (next to the copyright).</li>
-              <li>Enter your 4-digit PIN (either <code>1234</code> or <code>5678</code>) to unlock Owner Edit Mode.</li>
+              <li>Click the small <strong>Lock icon</strong> hidden in the navbar or at the bottom of the page.</li>
+              <li>Enter your 4-digit PIN (default is <code>1234</code>) to unlock Owner Mode.</li>
+              <li>Click <strong>Profile Photo & Info</strong> (or the camera button on your About profile photo) to upload your personal picture from your phone/computer or paste an image URL.</li>
+              <li>Upload your own custom logo graphic, switch gradient monogram styles, change your 4-digit passcode PIN, or modify your bio.</li>
               <li>Click <strong>Edit Picture & Details</strong> on any portfolio card to upload a new picture directly from your phone/computer or paste an image URL.</li>
-              <li>Click <strong>+ Add New Project Design</strong> to add a new project to your gallery.</li>
-              <li>Changes are automatically saved. Click <strong>Lock</strong> when you are done.</li>
+              <li>Click <strong>+ Add Project</strong> to add new design samples to your showcase anytime.</li>
+              <li>Changes are automatically saved to your browser. Click <strong>Lock</strong> when you are done.</li>
             </ul>
           </div>
 

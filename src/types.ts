@@ -35,6 +35,7 @@ export interface ContactFormData {
 export interface OwnerSettings {
   name: string;
   title: string;
+  profileImage: string;
   logoType: 'initials' | 'image';
   logoInitials: string;
   logoColorGradient: string;
@@ -53,6 +54,7 @@ export interface OwnerSettings {
 export const DEFAULT_OWNER_SETTINGS: OwnerSettings = {
   name: 'Adam Suhuyini Fauzan',
   title: 'Digital Designer • Tamale, Ghana',
+  profileImage: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=600&auto=format&fit=crop&q=80',
   logoType: 'initials',
   logoInitials: 'AF',
   logoColorGradient: 'from-emerald-500 to-teal-700',

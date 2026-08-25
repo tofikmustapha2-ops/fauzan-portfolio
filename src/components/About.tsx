@@ -1,7 +1,20 @@
 import React from 'react';
-import { MapPin, User, Sparkles, BookOpen, Target, HeartHandshake, CheckCircle2 } from 'lucide-react';
+import { MapPin, User, Sparkles, BookOpen, Target, HeartHandshake, CheckCircle2, Camera, Edit3 } from 'lucide-react';
+import { OwnerSettings, DEFAULT_OWNER_SETTINGS } from '../types';
 
-export const About: React.FC = () => {
+interface AboutProps {
+  ownerSettings?: OwnerSettings;
+  isOwnerMode?: boolean;
+  onOpenOwnerSettings?: (tab?: 'profile' | 'logo' | 'passcode' | 'contact' | 'content') => void;
+  onOpenOwnerLogin?: () => void;
+}
+
+export const About: React.FC<AboutProps> = ({
+  ownerSettings = DEFAULT_OWNER_SETTINGS,
+  isOwnerMode = false,
+  onOpenOwnerSettings,
+  onOpenOwnerLogin,
+}) => {
   return (
     <section id="about" className="py-20 bg-slate-900 text-white relative border-t border-slate-800">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -28,40 +41,97 @@ export const About: React.FC = () => {
               <div className="absolute top-0 right-0 w-32 h-32 bg-emerald-500/5 rounded-full blur-2xl pointer-events-none" />
               
               <div className="flex items-center gap-4 mb-6">
-                <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-emerald-500 via-teal-600 to-slate-900 flex items-center justify-center text-white font-extrabold text-2xl shadow-lg border border-emerald-400/30">
-                  AF
+                {/* Profile Picture / Headshot Container */}
+                <div className="relative group shrink-0">
+                  {ownerSettings.profileImage ? (
+                    <img
+                      src={ownerSettings.profileImage}
+                      alt={ownerSettings.name}
+                      className="w-18 h-18 sm:w-20 sm:h-20 rounded-2xl object-cover border-2 border-emerald-400/60 shadow-xl"
+                    />
+                  ) : ownerSettings.logoType === 'image' && ownerSettings.logoImage ? (
+                    <img
+                      src={ownerSettings.logoImage}
+                      alt={ownerSettings.name}
+                      className="w-18 h-18 sm:w-20 sm:h-20 rounded-2xl object-cover border-2 border-emerald-400/60 shadow-xl"
+                    />
+                  ) : (
+                    <div className={`w-18 h-18 sm:w-20 sm:h-20 rounded-2xl bg-gradient-to-br ${ownerSettings.logoColorGradient || 'from-emerald-500 via-teal-600 to-slate-900'} flex items-center justify-center text-white font-extrabold text-2xl shadow-xl border-2 border-emerald-400/40`}>
+                      {ownerSettings.logoInitials || 'AF'}
+                    </div>
+                  )}
+
+                  {/* Quick Edit Camera Button when in Owner Mode or button to unlock */}
+                  {isOwnerMode ? (
+                    <button
+                      type="button"
+                      onClick={() => onOpenOwnerSettings?.('profile')}
+                      id="owner-change-profile-pic-btn"
+                      className="absolute -bottom-1 -right-1 p-1.5 rounded-lg bg-emerald-500 text-slate-950 hover:bg-emerald-400 shadow-md transition-transform hover:scale-110 flex items-center justify-center"
+                      title="Change Profile Picture (Owner Mode)"
+                    >
+                      <Camera className="w-3.5 h-3.5" />
+                    </button>
+                  ) : (
+                    <button
+                      type="button"
+                      onClick={onOpenOwnerLogin}
+                      className="absolute -bottom-1 -right-1 p-1.5 rounded-lg bg-slate-900/80 hover:bg-slate-800 text-slate-400 hover:text-emerald-400 border border-slate-700 shadow transition-all opacity-0 group-hover:opacity-100"
+                      title="Unlock with password to change profile picture"
+                    >
+                      <Camera className="w-3 h-3" />
+                    </button>
+                  )}
                 </div>
-                <div>
-                  <h3 className="text-xl font-bold text-white">Adam Suhuyini Fauzan</h3>
-                  <p className="text-xs sm:text-sm text-emerald-400 font-medium">
-                    Digital Skills Student | Graphic Designer | Beginner Web Designer
+
+                <div className="flex-1 min-w-0">
+                  <h3 className="text-xl font-bold text-white truncate">{ownerSettings.name}</h3>
+                  <p className="text-xs sm:text-sm text-emerald-400 font-medium truncate">
+                    {ownerSettings.title}
                   </p>
                   <div className="flex items-center gap-1.5 text-xs text-slate-400 mt-1">
-                    <MapPin className="w-3.5 h-3.5 text-emerald-400" />
-                    <span>Based in Tamale, Ghana</span>
+                    <MapPin className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+                    <span className="truncate">Based in {ownerSettings.location}</span>
                   </div>
                 </div>
               </div>
 
               <div className="space-y-4 text-slate-300 text-sm sm:text-base leading-relaxed">
                 <p>
-                  Hello! I am <strong className="text-white">Adam Suhuyini Fauzan</strong>, a dedicated digital skills student and beginner digital designer based in <span className="text-emerald-400 font-medium">Tamale, Ghana</span>.
+                  {ownerSettings.aboutBio1 || (
+                    <>Hello! I am <strong className="text-white">{ownerSettings.name}</strong>, a dedicated digital skills student and beginner digital designer based in <span className="text-emerald-400 font-medium">{ownerSettings.location}</span>.</>
+                  )}
                 </p>
                 <p>
-                  I am actively developing my craft in graphic design and modern web development. My primary mission is to help local small businesses, shops, salons, restaurants, and young entrepreneurs create attractive promotional materials, eye-catching flyers, and clean one-page websites.
+                  {ownerSettings.aboutBio2 || (
+                    <>I am actively developing my craft in graphic design and modern web development. My primary mission is to help local small businesses, shops, salons, restaurants, and young entrepreneurs create attractive promotional materials, eye-catching flyers, and clean one-page websites.</>
+                  )}
                 </p>
                 <p>
                   I believe that every local business in Tamale deserves to look professional and reach more customers, without having to spend a fortune on complicated agency fees.
                 </p>
               </div>
 
-              {/* Status Pill */}
-              <div className="mt-6 pt-5 border-t border-slate-800/80 flex items-center justify-between">
-                <span className="text-xs text-slate-400">Current Status:</span>
-                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-500/10 text-emerald-300 text-xs font-semibold border border-emerald-500/20">
-                  <span className="w-2 h-2 rounded-full bg-emerald-400"></span>
-                  Open for Local Projects
-                </span>
+              {/* Status Pill & Owner Quick Button */}
+              <div className="mt-6 pt-5 border-t border-slate-800/80 flex flex-wrap items-center justify-between gap-2">
+                <div className="flex items-center gap-2">
+                  <span className="text-xs text-slate-400">Current Status:</span>
+                  <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-500/10 text-emerald-300 text-xs font-semibold border border-emerald-500/20">
+                    <span className="w-2 h-2 rounded-full bg-emerald-400"></span>
+                    Open for Local Projects
+                  </span>
+                </div>
+
+                {isOwnerMode && (
+                  <button
+                    onClick={() => onOpenOwnerSettings?.('profile')}
+                    id="about-edit-profile-photo-btn"
+                    className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-slate-900 hover:bg-slate-800 text-emerald-300 border border-emerald-500/30 text-xs font-semibold transition-colors"
+                  >
+                    <Camera className="w-3.5 h-3.5 text-emerald-400" />
+                    <span>Change Profile Picture</span>
+                  </button>
+                )}
               </div>
             </div>
           </div>

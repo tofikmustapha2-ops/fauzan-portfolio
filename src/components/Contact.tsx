@@ -1,17 +1,19 @@
 import React, { useState } from 'react';
 import { Mail, Phone, MapPin, Send, CheckCircle2, AlertCircle, Loader2, MessageSquare, Clock, ShieldCheck, HelpCircle } from 'lucide-react';
-import { ContactFormData, ServiceType } from '../types';
+import { ContactFormData, ServiceType, OwnerSettings, DEFAULT_OWNER_SETTINGS } from '../types';
 
 interface ContactProps {
   selectedService: ServiceType;
   onServiceChange: (service: ServiceType) => void;
   onOpenOwnerGuide: () => void;
+  ownerSettings?: OwnerSettings;
 }
 
 export const Contact: React.FC<ContactProps> = ({
   selectedService,
   onServiceChange,
   onOpenOwnerGuide,
+  ownerSettings = DEFAULT_OWNER_SETTINGS,
 }) => {
   const [formData, setFormData] = useState<ContactFormData>({
     name: '',
@@ -78,19 +80,19 @@ export const Contact: React.FC<ContactProps> = ({
     }
   };
 
-  const whatsappNumber = import.meta.env.VITE_WHATSAPP_NUMBER || '233204328042';
-  const displayPhone = '0204328042';
-  const displayEmail = 'suhuyinifauzanadam@gmail.com';
+  const whatsappNumber = ownerSettings.whatsappNumber || '233204328042';
+  const displayPhone = ownerSettings.phone || '0204328042';
+  const displayEmail = ownerSettings.email || 'suhuyinifauzanadam@gmail.com';
 
   const handleWhatsAppDirect = () => {
     const text = encodeURIComponent(
-      `Hello Adam, my name is ${formData.name || 'a prospective client'}. I would like to discuss ${formData.service || 'a design project'} with you.`
+      `Hello ${ownerSettings.name}, my name is ${formData.name || 'a prospective client'}. I would like to discuss ${formData.service || 'a design project'} with you.`
     );
-    window.open(`https://wa.me/233204328042?text=${text}`, '_blank');
+    window.open(`https://wa.me/${whatsappNumber}?text=${text}`, '_blank');
   };
 
   const handlePhoneCall = () => {
-    window.location.href = 'tel:0204328042';
+    window.location.href = `tel:${displayPhone}`;
   };
 
   return (
@@ -118,8 +120,8 @@ export const Contact: React.FC<ContactProps> = ({
           <div className="lg:col-span-5 space-y-6">
             <div className="bg-slate-950 rounded-2xl p-6 sm:p-8 border border-slate-800 shadow-xl space-y-6">
               <div>
-                <h3 className="text-xl font-bold text-white mb-1">Adam Suhuyini Fauzan</h3>
-                <p className="text-xs text-emerald-400 font-medium">Digital Designer & Skills Student</p>
+                <h3 className="text-xl font-bold text-white mb-1">{ownerSettings.name}</h3>
+                <p className="text-xs text-emerald-400 font-medium">{ownerSettings.title}</p>
               </div>
 
               {/* Contact Details List */}
@@ -131,8 +133,7 @@ export const Contact: React.FC<ContactProps> = ({
                   </div>
                   <div>
                     <p className="text-xs text-slate-400">Location:</p>
-                    <p className="text-sm font-semibold text-white">Tamale, Ghana</p>
-                    <span className="text-[11px] text-slate-400">Northern Region</span>
+                    <p className="text-sm font-semibold text-white">{ownerSettings.location}</p>
                   </div>
                 </div>
 
@@ -162,12 +163,11 @@ export const Contact: React.FC<ContactProps> = ({
                     <p className="text-xs text-slate-400">WhatsApp & Phone:</p>
                     <div className="flex items-center gap-2">
                       <a
-                        href="tel:0204328042"
+                        href={`tel:${displayPhone}`}
                         className="text-sm font-bold text-white hover:text-emerald-400 transition-colors"
                       >
-                        0204328042
+                        {displayPhone}
                       </a>
-                      <span className="text-xs text-slate-500">(020 432 8042)</span>
                     </div>
                     <span className="text-[11px] text-emerald-400 font-medium">WhatsApp or Direct Phone Call</span>
                   </div>
@@ -195,15 +195,15 @@ export const Contact: React.FC<ContactProps> = ({
                   className="w-full flex items-center justify-center gap-2.5 py-3.5 px-4 rounded-xl font-bold text-xs sm:text-sm bg-emerald-600 hover:bg-emerald-500 text-white shadow-lg shadow-emerald-600/20 transition-all duration-200"
                 >
                   <Phone className="w-4 h-4" />
-                  <span>Chat on WhatsApp (0204328042)</span>
+                  <span>Chat on WhatsApp ({displayPhone})</span>
                 </button>
                 <a
-                  href="tel:0204328042"
+                  href={`tel:${displayPhone}`}
                   id="direct-call-contact-btn"
                   className="w-full flex items-center justify-center gap-2.5 py-3 px-4 rounded-xl font-semibold text-xs sm:text-sm bg-slate-900 hover:bg-slate-800 text-slate-200 border border-slate-700/80 transition-all duration-200"
                 >
                   <Phone className="w-4 h-4 text-emerald-400" />
-                  <span>Call 0204328042 Directly</span>
+                  <span>Call {displayPhone} Directly</span>
                 </a>
                 <p className="text-center text-[11px] text-slate-400 mt-1">
                   Fastest response for design quotes & inquiries in Tamale
